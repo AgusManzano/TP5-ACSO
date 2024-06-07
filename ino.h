@@ -46,7 +46,7 @@ struct inode {
 #define	IFDIR	040000	        // directory
 #define	IFCHR	020000	        // character special
 #define	IFBLK	060000	        // block special, 0 is regular
-#define	ILARG	010000		// large addressing algorithm
+#define	ILARG	010000		// large addressing algorithm 
 #define	ISUID	04000		// set user id on execution
 #define	ISGID	02000		// set group id on execution
 #define ISVTX	01000		// save swapped text even after use
