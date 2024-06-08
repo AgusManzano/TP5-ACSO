@@ -8,7 +8,7 @@
  * structure does match for format of a directory entry.
  */
 struct direntv6 {
-  uint16_t d_inumber;   
+  uint16_t d_inumber;    
   char     d_name[14];
 };
 

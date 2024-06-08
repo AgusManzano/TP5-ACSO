@@ -14,7 +14,7 @@ int file_getblock(struct unixfilesystem *fs, int inumber, int blockNum, void *bu
         return -1;  // Error reading inode
     }
 
-    int diskBlockNum = inode_indexlookup(fs, &in, blockNum);
+    uint16_t diskBlockNum = inode_indexlookup(fs, &in, blockNum);
     if (diskBlockNum < 0) {
         return -1;  // Error looking up block index
     }
@@ -23,9 +23,9 @@ int file_getblock(struct unixfilesystem *fs, int inumber, int blockNum, void *bu
         return -1;  // Error reading block
     }
 
-    int fileSize = inode_getsize(&in);
-    int completeBlocks = fileSize / DISKIMG_SECTOR_SIZE;
-    int lastBlockSize = fileSize % DISKIMG_SECTOR_SIZE;
+    uint64_t fileSize = inode_getsize(&in);
+    uint64_t completeBlocks = fileSize / DISKIMG_SECTOR_SIZE;
+    uint64_t lastBlockSize = fileSize % DISKIMG_SECTOR_SIZE;
 
     if (blockNum < completeBlocks) {
         return DISKIMG_SECTOR_SIZE;
