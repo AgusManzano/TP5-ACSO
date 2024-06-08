@@ -32,13 +32,13 @@ int pathname_lookup(struct unixfilesystem *fs, const char *pathname) {
 
     //Mientras haya tokens
     while (token != NULL) {
-        struct direntv6 dirEnt;
-        if (directory_findname(fs, token, inumber, &dirEnt) < 0) {
+        struct direntv6 dirEnt; //estructura para guardar el inodo
+        if (directory_findname(fs, token, inumber, &dirEnt) < 0) { //busco el nombre en el inodo
             printf("Fallo en la busqueda del nombre %s en el inodo %d\n", token, inumber);
             return -1;
         }
-        inumber = dirEnt.d_inumber;
-        token = strtok(NULL, "/");
+        inumber = dirEnt.d_inumber; //guardo el inodo
+        token = strtok(NULL, "/");  //siguiente token
     }
 
     return inumber;

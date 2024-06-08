@@ -15,27 +15,25 @@
  * TODO
  */
 int directory_findname(struct unixfilesystem *fs, const char *name, int dirinumber, struct direntv6 *dirEnt) {
-
-  if (dirinumber < 0) {
+ 
+  if (dirinumber < 0) { //Si el inodo es negativo, entonces devuelvo error
     printf("El inodo es negativo\n");
     return -1;
   }
 
-  struct inode in;
-  if (inode_iget(fs, dirinumber, &in) < 0) {
+  struct inode in; //inodo donde se guardan los direntv6's
+  if (inode_iget(fs, dirinumber, &in) < 0) { //obtengo el inodo
     printf("No se pudo obtener el inodo %d\n", dirinumber);
     return -1;
   }
 
-  if ((in.i_mode & IFMT) != IFDIR) {
+  if ((in.i_mode & IFMT) != IFDIR) { //Si el inodo no es un directorio, entonces devuelvo error
     printf("El inodo %d no es un directorio\n", dirinumber);
     return -1;
   }
 
-  //Primero saco cuantos bloques ocupa el archivo
-  int numBlocks = (inode_getsize(&in)-1) / DISKIMG_SECTOR_SIZE + 1;
+  int numBlocks = (inode_getsize(&in)-1) / DISKIMG_SECTOR_SIZE + 1;  
 
-  //Si el archivo ocupa mas de un bloque, entonces tengo que recorrer todos los bloques
   for (int i = 0; i < numBlocks; i++) {
     
     //me hago un buffer de direntv6's para guardar los direntv6's de un bloque
@@ -46,14 +44,13 @@ int directory_findname(struct unixfilesystem *fs, const char *name, int dirinumb
     }
 
     //Recorro todos los direntv6's del buffer
-    for (int j = 0; j < MAX_DIRENTS; j++) {
+    for (int j = 0; j < (int)MAX_DIRENTS; j++) {
       // printf("Comparando %s con %s\n", buffer[j].d_name, name);
-      //Si el nombre del direntv6 es igual al nombre que busco, entonces lo copio en dirEnt
-      if (strcmp(buffer[j].d_name, name) == 0) {
-        *dirEnt = buffer[j];
+      if (strcmp(buffer[j].d_name, name) == 0) {  //Si el nombre del direntv6 es igual al nombre que busco
+        *dirEnt = buffer[j]; //guardo el direntv6 en dirEnt
         return 0;
       }
     }
   }
-  return -1;
+  return -1; //Si no encontre el nombre, devuelvo error
 }

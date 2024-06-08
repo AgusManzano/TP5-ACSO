@@ -10,18 +10,18 @@
  * TODO
  */
 int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
-    int inodes_per_block = DISKIMG_SECTOR_SIZE / sizeof(struct inode);
-    int block_num = (inumber - 1) / inodes_per_block;
+    int inodes_per_block = DISKIMG_SECTOR_SIZE / sizeof(struct inode);  // 16
+    int block_num = (inumber - 1) / inodes_per_block;  
     int offset = (inumber - 1) % inodes_per_block;
 
-    struct inode block[inodes_per_block];
+    struct inode block[inodes_per_block]; // 16 inodes donde se guardan los inodos
 
-    if (diskimg_readsector(fs->dfd, INODE_START_SECTOR + block_num, block) < 0) {
-        fprintf(stderr, "Error reading inode block\n");
+    if (diskimg_readsector(fs->dfd, INODE_START_SECTOR + block_num, block) < 0) { // leo el bloque que contiene el inodo
+        fprintf(stderr, "Error reading inode block\n"); 
         return -1;
     }
 
-    *inp = block[offset];
+    *inp = block[offset]; // guardo el inodo en inp
     
     return 0;
 }
@@ -49,7 +49,7 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inode, int blockN
                 return -1;
             }
 
-            diskBlockNum = indirect_block[address_offset];
+            diskBlockNum = indirect_block[address_offset];  //guardo el bloque que quiero leer
 
         } else { 
             // printf("double indirect block\n");
@@ -58,20 +58,20 @@ int inode_indexlookup(struct unixfilesystem *fs, struct inode *inode, int blockN
             uint16_t sector2_offset = double_indirect_block / MAXFILEBLOCKS;
             uint16_t address_offset = blockNum % MAXFILEBLOCKS;
 
-            uint16_t first_block[DISKIMG_SECTOR_SIZE];
+            uint16_t first_block[DISKIMG_SECTOR_SIZE]; //aca guardo el primer bloque indirecto
 
-            if (diskimg_readsector(fs->dfd, inode->i_addr[sector1_offset], first_block) < 0) {
+            if (diskimg_readsector(fs->dfd, inode->i_addr[sector1_offset], first_block) < 0) { //leo el primer bloque indirecto
                 fprintf(stderr, "Error reading indirect block\n");
                 return -1;
             }
 
-            uint16_t indirect_block[MAXFILEBLOCKS];
-            if (diskimg_readsector(fs->dfd, first_block[sector2_offset], indirect_block) < 0) {
+            uint16_t indirect_block[MAXFILEBLOCKS]; //aca guardo el segundo bloque indirecto
+            if (diskimg_readsector(fs->dfd, first_block[sector2_offset], indirect_block) < 0) { //leo el segundo bloque indirecto
                 fprintf(stderr, "Error reading indirect block\n");
                 return -1;
             }
 
-            diskBlockNum = indirect_block[address_offset];       
+            diskBlockNum = indirect_block[address_offset];   //guardo el bloque que quiero leer    
         }
     }
     return diskBlockNum;
